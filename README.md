@@ -1,2 +1,0 @@
-# bioinformatica
-Progetto di bioinformatica
