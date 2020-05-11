@@ -5,48 +5,8 @@ addons:
   sonarcloud:
     organization: "odococo"
     token:
-      secure: Usage: travis COMMAND ...
+        secure: "gehu26JC6HFpJ8GzokeinWul+TtZ/xRPfcB7H516K6bp1CVW9/81DRduNSXd+1gF5HSVZhQYj5i6uifrwYfqa+lY1YJWI62nc5PtU9AIDGDrnmtWMd4LD8alAm9+tAFawiuWbgwNUFjLKGqHBXjaqkpjwrL2QVkBhCs9VlG/7Nhn9hjZmWf379W1ajrdk2hntp8VqTjgT9JL7az6OxAhOLCRGGLO3xsGRXO6ZN8x94AvYBKe8Zn84ctV21nAxy4Hpg3Xi317eoux/3qM3Ej4Ir28KHJT3LIKqX14KZqIcNxZlmX2Er+BpfTTNu2iVm3ZFFhJUHYoVtMvrhj2yqsw0EptGCFBEB59yPImAEPHDF1Dzg6VUrq4638qMMZNQEp/LpZHsmV0dQ9699XK0DeKEIoMMaGUx0s6oQc1vrROHSpMvxAk12OtO5VLjgjYAzxGpHK8cvnPt4HgO9laj1057JOdghizN6RClka/SNMy7jrmEDmegovPkxWsR4HsEBE42B3WoMUHQbMSxBrhsuUHxFeFx8XA2QFHvb+dw502vL0LcNWtQDHCZukLw7f9TPkQ/UeDPexbpRJYw6HrORlKpwhPoetpLOL0ioDfjI2JWWP9rfwLk9uK6ihBfx6VbbeU0H3ky1LPwc5KNBbcNwZdH3GQBSsyCSXKA+z7i7Pg97U="
 
-Available commands:
-
-	accounts               displays accounts and their subscription status
-	branches               displays the most recent build for each branch
-	cache                  lists or deletes repository caches
-	cancel                 cancels a job or build
-	console                interactive shell; requires `pry`
-	disable                disables a project
-	enable                 enables a project
-	encrypt                encrypts values for the .travis.yml
-	encrypt-file           encrypts a file and adds decryption steps to .travis.yml
-	endpoint               displays or changes the API endpoint
-	env                    show or modify build environment variables
-	help                   helps you out when in dire need of information
-	history                displays a project's build history
-	init                   generates a .travis.yml and enables the project
-	lint                   display warnings for a .travis.yml
-	login                  authenticates against the API and stores the token
-	logout                 deletes the stored API token
-	logs                   streams test logs
-	monitor                live monitor for what's going on
-	open                   opens a build or job in the browser
-	pubkey                 prints out a repository's public key
-	raw                    makes an (authenticated) API call and prints out the result
-	report                 generates a report useful for filing issues
-	repos                  lists repositories the user has certain permissions on
-	requests               lists recent requests
-	restart                restarts a build or job
-	settings               access repository settings
-	setup                  sets up an addon or deploy target
-	show                   displays a build or job
-	sshkey                 checks, updates or deletes an SSH key
-	status                 checks status of the latest build
-	sync                   triggers a new sync with GitHub
-	token                  outputs the secret API token
-	version                outputs the client version
-	whatsup                lists most recent builds
-	whoami                 outputs the current user
-
-run `/usr/local/bin/travis help COMMAND` for more info
 language: python
 python:
 - '3.6'
