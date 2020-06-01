@@ -76,7 +76,7 @@ def _get_result(model: Model, run_type: str, holdout: int, **kwargs) -> Dict:
     }
 
 
-def predict_epigenomics(data: pd.DataFrame, labels: pd.DataFrame, models: List[Model]):
+def predict_epigenomics(data: pd.DataFrame, labels: pd.DataFrame, models: List[Model]) -> List[Dict]:
     if os.path.exists(_get_filename()):
         with open(_get_filename()) as json_file:
             results = json.load(json_file)

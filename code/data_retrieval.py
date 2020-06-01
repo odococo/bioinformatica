@@ -111,12 +111,8 @@ def get_holdout(train: np.ndarray, test: np.ndarray,
     )
 
 
-def data_retrieval(cell_line: str) -> Tuple[Dict[str, pd.DataFrame], Dict[str, pd.DataFrame], Dict[str, pd.DataFrame]]:
+def data_retrieval(cell_line: str) -> Tuple[Dict[str, pd.DataFrame], Dict[str, pd.DataFrame]]:
     print('Downloading data...')
     epigenomes, labels = download_data(cell_line)
-    print('Downloading genome...')
-    genome = get_genome()
-    print('Getting dataframe...')
-    sequences = get_sequences(epigenomes, genome)
     print('Finished!')
-    return epigenomes, labels, sequences
+    return epigenomes, labels

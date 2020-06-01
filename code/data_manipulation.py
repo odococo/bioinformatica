@@ -21,12 +21,12 @@ def overfitting_risk(epigenomes: Dict[str, pd.DataFrame], threshold: int = 1) ->
 
 
 def nan_check(epigenomes: Dict[str, pd.DataFrame]) -> None:
-    for region, x in epigenomes.items():
+    for region, data in epigenomes.items():
         print("\n".join((
             f"Nan values report for {region} data:",
-            f"In the document there are {x.isna().values.sum()} NaN values out of {x.values.size} values.",
-            f"The sample with most values has {x.isna().sum(axis=0).max()} NaN values out of {x.shape[1]} values.",
-            f"The feature with most values has {x.isna().sum().max()} NaN values out of {x.shape[0]} values."
+            f"In the document there are {data.isna().values.sum()} NaN values out of {data.values.size} values.",
+            f"The sample with most values has {data.isna().sum(axis=0).max()} NaN values out of {data.shape[1]} values.",
+            f"The feature with most values has {data.isna().sum().max()} NaN values out of {data.shape[0]} values."
         )))
         print("=" * 80)
 
@@ -47,17 +47,11 @@ def fit_mode(data: pd.DataFrame) -> pd.DataFrame:
     return fit_constant(data, data.mode())
 
 
-def fit_neighbours(data: pd.DataFrame, neighbours: int = 5) -> pd.DataFrame:
-    return pd.DataFrame(KNNImputer(n_neighbours=neighbours).fit_transform(data.values),
+def fit_neighbours(data: pd.DataFrame, neighbors: int = 5) -> pd.DataFrame:
+    return pd.DataFrame(KNNImputer(n_neighbors=neighbors).fit_transform(data.values),
                         columns=data.columns,
                         index=data.index
                         )
-
-
-def fit_missing(epigenomes: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
-    for region, data in epigenomes.items():
-        epigenomes[region] = fit_neighbours(data)
-    return epigenomes
 
 
 def check_class_balance(labels: Dict[str, pd.DataFrame]) -> None:
@@ -83,7 +77,7 @@ def drop_constant_features(epigenomes: Dict[str, pd.DataFrame]) -> Dict[str, pd.
     return epigenomes
 
 
-def apply_z_scoring(epigenomes: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
+def apply_z_scoring(epigenomes: pd.DataFrame) -> pd.DataFrame:
     def robust_zscoring(df: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame(
             RobustScaler().fit_transform(df.values),
@@ -91,47 +85,42 @@ def apply_z_scoring(epigenomes: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFra
             index=df.index
         )
 
-    return {region: robust_zscoring(data) for region, data in epigenomes.items()}
+    return robust_zscoring(epigenomes)
 
 
-def drop_uncorrelated(epigenomes: Dict[str, pd.DataFrame], labels: Dict[str, pd.DataFrame],
-                      p_value_threshold: float = 0.01, correlation_threshold: float = 0.05) -> Dict[str, pd.DataFrame]:
-    uncorrelated = {region: set() for region in epigenomes}
+def drop_uncorrelated(epigenomes: pd.DataFrame, labels: pd.DataFrame,
+                      p_value_threshold: float = 0.01, correlation_threshold: float = 0.05) -> pd.DataFrame:
+    uncorrelated = set()
 
     def pearson():
-        for region, data in epigenomes.items():
-            for column in tqdm(data.columns, desc=f"Running Pearson test for {region}", dynamic_ncols=True,
-                               leave=False):
-                correlation, p_value = pearsonr(data[column].values.ravel(), labels[region].values.ravel())
-                if p_value > p_value_threshold:
-                    print(region, column, correlation)
-                    uncorrelated[region].add(column)
+        for column in tqdm(epigenomes.columns, desc="Running Pearson test", dynamic_ncols=True,
+                           leave=False):
+            correlation, p_value = pearsonr(epigenomes[column].values.ravel(), labels.values.ravel())
+            if p_value > p_value_threshold:
+                print(column, correlation)
+                uncorrelated.add(column)
 
     def spearman():
-        for region, data in epigenomes.items():
-            for column in tqdm(data.columns, desc=f"Running Spearman test for {region}", dynamic_ncols=True,
-                               leave=False):
-                correlation, p_value = spearmanr(data[column].values.ravel(), labels[region].values.ravel())
-                if p_value > p_value_threshold:
-                    print(region, column, correlation)
-                uncorrelated[region].add(column)
+        for column in tqdm(epigenomes.columns, desc="Running Spearman test}", dynamic_ncols=True,
+                           leave=False):
+            correlation, p_value = spearmanr(epigenomes[column].values.ravel(), labels.values.ravel())
+            if p_value > p_value_threshold:
+                print(column, correlation)
+            uncorrelated.add(column)
 
     def mine():
-        for region, data in epigenomes.items():
-            for column in tqdm(uncorrelated[region], desc=f"Running MINE test for {region}", dynamic_ncols=True,
-                               leave=False):
-                mine = MINE()
-                mine.compute_score(data[column].values.ravel(), labels[region].values.ravel())
-                score = mine.mic()
-                if score < correlation_threshold:
-                    print(region, column, score)
-                else:
-                    uncorrelated[region].remove(column)
+        for column in tqdm(uncorrelated, desc="Running MINE test}", dynamic_ncols=True,
+                           leave=False):
+            mine = MINE()
+            mine.compute_score(epigenomes[column].values.ravel(), labels.values.ravel())
+            score = mine.mic()
+            if score < correlation_threshold:
+                print(column, score)
+            else:
+                uncorrelated.remove(column)
 
     def drop():
-        for region, data in epigenomes.items():
-            epigenomes[region] = data.drop(columns=[col for col in uncorrelated[region] if col in x.columns])
-        return epigenomes
+        return epigenomes.drop(columns=[col for col in uncorrelated if col in epigenomes.columns])
 
     pearson()
     spearman()
@@ -139,31 +128,30 @@ def drop_uncorrelated(epigenomes: Dict[str, pd.DataFrame], labels: Dict[str, pd.
     return drop()
 
 
-def drop_too_correlated(epigenomes: Dict[str, pd.DataFrame], p_value_threshold: float = 0.01,
-                        correlation_threshold: float = 0.95) -> Dict[str, pd.DataFrame]:
-    extremely_correlated = {region: set() for region in epigenomes}
-    scores = {region: [] for region in epigenomes}
+def drop_too_correlated(epigenomes: pd.DataFrame, p_value_threshold: float = 0.01,
+                        correlation_threshold: float = 0.95) -> List[Tuple]:
+    extremely_correlated = set()
+    scores = []
 
     def pearson():
-        for region, data in epigenomes.items():
-            for i, column in tqdm(
-                    enumerate(data.columns),
-                    total=len(data.columns),
-                    desc=f"Running Pearson test for {region}",
-                    dynamic_ncols=True,
-                    leave=False):
-                for feature in data.columns[i + 1:]:
-                    correlation, p_value = pearsonr(data[column].values.ravel(), data[feature].values.ravel())
-                    correlation = np.abs(correlation)
-                    scores[region].append((correlation, column, feature))
-                    if p_value < p_value_threshold and correlation > correlation_threshold:
-                        print(region, column, feature, correlation)
-                        if entropy(data[column]) > entropy(data[feature]):
-                            extremely_correlated[region].add(feature)
-                        else:
-                            extremely_correlated[region].add(column)
+        for i, column in tqdm(
+                enumerate(epigenomes.columns),
+                total=len(epigenomes.columns),
+                desc="Running Pearson test}",
+                dynamic_ncols=True,
+                leave=False):
+            for feature in epigenomes.columns[i + 1:]:
+                correlation, p_value = pearsonr(epigenomes[column].values.ravel(), epigenomes[feature].values.ravel())
+                correlation = np.abs(correlation)
+                scores.append((correlation, column, feature))
+                if p_value < p_value_threshold and correlation > correlation_threshold:
+                    print(column, feature, correlation)
+                    if entropy(epigenomes[column]) > entropy(epigenomes[feature]):
+                        extremely_correlated.add(feature)
+                    else:
+                        extremely_correlated.add(column)
 
-    return {region: sorted(score, key=lambda x: np.abs(x[0]), reverse=True) for region, score in scores.items()}
+    return sorted(scores, key=lambda x: np.abs(x[0]), reverse=True)
 
 
 def show(epigenomes: Dict[str, pd.DataFrame], labels: Dict[str, pd.DataFrame], scores: Dict[str, List[Tuple]]):
