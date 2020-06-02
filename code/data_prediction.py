@@ -35,7 +35,7 @@ def _get_filename() -> str:
 
 
 def _get_holdouts() -> StratifiedShuffleSplit:
-    return StratifiedShuffleSplit(n_splits=get_default('splits'), test_size=0.2, random_state=42)
+    return StratifiedShuffleSplit(n_splits=get_default('splits'), test_size=get_default('test_size'), random_state=42)
 
 
 def _report(y_true: np.ndarray, y_pred: np.ndarray) -> Dict:

@@ -9,7 +9,8 @@ _defaults = {
     'batch_size': 1024,
     'splits': 50,
     'cell_line': '',
-    'region': ''
+    'region': '',
+    'test_size': 0.2
 }
 
 
