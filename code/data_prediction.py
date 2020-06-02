@@ -1,35 +1,23 @@
+import json
 import os
+from glob import glob
+from typing import List, Dict
 
+import compress_json
 import numpy as np
 import pandas as pd
-import json
-import compress_json
-
-from typing import List, Dict
-from barplots import barplots
 from PIL import Image
-from glob import glob
-
-from sklearn.model_selection import StratifiedShuffleSplit
-from sklearn.metrics import accuracy_score, balanced_accuracy_score, roc_auc_score, average_precision_score
-
+from barplots import barplots
 from sanitize_ml_labels import sanitize_ml_labels
+from sklearn.metrics import accuracy_score, balanced_accuracy_score, roc_auc_score, average_precision_score
+from sklearn.model_selection import StratifiedShuffleSplit
 from tensorboard.notebook import display
 from tensorflow.python.keras.callbacks import EarlyStopping
 from tqdm import tqdm
 
 from data_retrieval import get_holdout
+from defaults import get_default
 from meta_models import Model
-
-_defaults = {
-    'splits': 50,
-    'cell_line': '',
-    'region': ''
-}
-
-
-def set_default(**values):
-    _defaults.update(values)
 
 
 def _precomputed(results, model: Model, holdout: int) -> bool:
@@ -43,11 +31,11 @@ def _precomputed(results, model: Model, holdout: int) -> bool:
 
 
 def _get_filename() -> str:
-    return f"results_{_defaults['cell_line']}_{_defaults['region']}.json"
+    return f"results_{get_default('cell_line')}_{get_default('region')}.json"
 
 
 def _get_holdouts() -> StratifiedShuffleSplit:
-    return StratifiedShuffleSplit(n_splits=_defaults['splits'], test_size=0.2, random_state=42)
+    return StratifiedShuffleSplit(n_splits=get_default('splits'), test_size=0.2, random_state=42)
 
 
 def _report(y_true: np.ndarray, y_pred: np.ndarray) -> Dict:
@@ -83,7 +71,7 @@ def predict_epigenomics(data: pd.DataFrame, labels: pd.DataFrame, models: List[M
     else:
         results = []
 
-    for i, (train, test) in tqdm(enumerate(_get_holdouts().split(data, labels)), total=_defaults['splits'],
+    for i, (train, test) in tqdm(enumerate(_get_holdouts().split(data, labels)), total=get_default('splits'),
                                  desc="Computing holdouts", dynamic_ncols=True):
         for model, params in tqdm([model.get_model() for model in models], total=len(models), desc="Training models",
                                   leave=False, dynamic_ncols=True):
@@ -96,7 +84,7 @@ def predict_epigenomics(data: pd.DataFrame, labels: pd.DataFrame, models: List[M
     return results
 
 
-def predict_sequences(sequences: pd.DataFrame, labels: np.ndarray, models: List[Model]) -> List[Dict]:
+def predict_sequences(sequences: pd.DataFrame, labels: pd.DataFrame, models: List[Model]) -> List[Dict]:
     if os.path.exists(_get_filename()):
         with open(_get_filename()) as json_file:
             results = json.load(json_file)
@@ -104,7 +92,8 @@ def predict_sequences(sequences: pd.DataFrame, labels: np.ndarray, models: List[
         results = []
 
     for i, (train_index, test_index) in tqdm(enumerate(_get_holdouts().split(sequences, labels)),
-                                             total=_defaults['splits'], desc="Computing holdouts", dynamic_ncols=True):
+                                             total=get_default('splits'), desc="Computing holdouts",
+                                             dynamic_ncols=True):
         train, test = get_holdout(train_index, test_index, sequences, labels)
         for model, params in tqdm([model.get_model() for model in models], total=len(models),
                                   desc="Training models", leave=False, dynamic_ncols=True):

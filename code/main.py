@@ -1,34 +1,39 @@
 from data_manipulation import fit_neighbours, apply_z_scoring
-from data_prediction import predict_epigenomics
-from data_retrieval import data_retrieval, set_default
-from models import get_mlp_egigenomics, get_ffnn_epigenomics_v1, get_ffnn_epigenomics_v2, get_ffnn_epigenomics_v3
+from data_prediction import predict_epigenomics, predict_sequences, show_barplots
+from data_retrieval import data_retrieval, get_sequences
+from defaults import set_default, get_default
+from models import get_mlp_egigenomics, get_ffnn_epigenomics_v1, get_ffnn_epigenomics_v2, get_ffnn_epigenomics_v3, \
+    get_mlp_sequential, get_ffnn_sequential, get_cnn_sequential_v1
 
 cell_line = 'HEK293'
-regions = 'enhancers'
+region = 'enhancers'
 
 set_default(
     assembly='hg19'  # path
 )
 
 if __name__ == '__main__':
-    epigenomes, labels = data_retrieval(cell_line)
+    input_data, output_data = data_retrieval(cell_line, region)
+    input_data = fit_neighbours(input_data, input_data.shape[0] // 10)
+    input_data = apply_z_scoring(input_data)
 
-    input_data = {}
+    shape = (input_data.shape[1],)
+    epi_models = [
+        get_mlp_egigenomics()(shape, name="MLP"),
+        get_ffnn_epigenomics_v1()(shape, name="FFNN_1"),
+        get_ffnn_epigenomics_v2()(shape, name="FFNN_2"),
+        get_ffnn_epigenomics_v3()(shape, name="FFNN_3")
+    ]
+    results = predict_epigenomics(input_data, output_data, epi_models)
+    show_barplots(results)
 
-    for region, data in epigenomes.items():
-        data_imputed = fit_neighbours(data, data.shape[0] // 10)
-        data_normalized = apply_z_scoring(data_imputed)
-        input_data[region] = data_normalized
+    input_data = get_sequences(input_data)
 
-    data = input_data[regions]
-    output = labels[regions]
-
-    shape = (data.shape[1],)
-
-    models = []
-    models.append(get_mlp_egigenomics()(shape, name="MLP"))
-    models.append(get_ffnn_epigenomics_v1()(shape, name="FFNN_1"))
-    models.append(get_ffnn_epigenomics_v2()(shape, name="FFNN_2"))
-    models.append(get_ffnn_epigenomics_v3()(shape, name="FFNN_3"))
-
-    results = predict_epigenomics(data, output)
+    shape = (get_default('window_size'), get_default('nucleotides'))
+    seq_models = [
+        get_mlp_sequential()(shape, name="MLP"),
+        get_ffnn_sequential()(shape, name="FFNN"),
+        get_cnn_sequential_v1()(shape, name="CNN_1")
+    ]
+    results = predict_sequences(input_data, output_data, seq_models)
+    show_barplots(results)
