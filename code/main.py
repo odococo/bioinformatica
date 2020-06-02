@@ -7,6 +7,7 @@ from models import get_mlp_egigenomics, get_ffnn_epigenomics_v1, get_ffnn_epigen
 
 
 set_default(
+    dataset_path='',
     assembly='hg19',  # path
     cell_line='HEK293',
     region='enhancers'
