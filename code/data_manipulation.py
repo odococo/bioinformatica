@@ -9,6 +9,7 @@ from sklearn.impute import KNNImputer
 from sklearn.metrics import euclidean_distances
 from sklearn.preprocessing import RobustScaler
 from tqdm import tqdm
+from minepy import MINE
 
 
 def overfitting_risk(epigenomes: Dict[str, pd.DataFrame], threshold: int = 1) -> bool:
@@ -63,17 +64,16 @@ def check_class_balance(labels: Dict[str, pd.DataFrame]) -> None:
     fig.show()
 
 
-def drop_constant_features(epigenomes: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
-    def drop(df: pd.Dataframe) -> pd.DataFrame:
+def drop_constant_features(region:str,epigenomes: pd.DataFrame) -> pd.DataFrame:
+    def drop(df: pd.DataFrame) -> pd.DataFrame:
         return df.loc[:, (df != df.iloc[0]).any()]
 
-    for region, data in epigenomes.items():
-        result = drop(data)
-        if data.shape[1] != result.shape[1]:
-            print(f"Features in {region} were constant and had to be dropped!")
-            epigenomes[region] = result
-        else:
-            print(f"No constant features were found in {region}!")
+    result = drop(epigenomes)
+    if epigenomes.shape[1] != result.shape[1]:
+        print(f"Features in {region} were constant and had to be dropped!")
+        epigenomes= result
+    else:
+        print(f"No constant features were found in {region}!")
     return epigenomes
 
 
@@ -97,35 +97,35 @@ def drop_uncorrelated(epigenomes: pd.DataFrame, labels: pd.DataFrame,
                            leave=False):
             correlation, p_value = pearsonr(epigenomes[column].values.ravel(), labels.values.ravel())
             if p_value > p_value_threshold:
-                print(column, correlation)
+                #print(column, correlation)
                 uncorrelated.add(column)
 
     def spearman():
-        for column in tqdm(epigenomes.columns, desc="Running Spearman test}", dynamic_ncols=True,
+        for column in tqdm(epigenomes.columns, desc="Running Spearman test", dynamic_ncols=True,
                            leave=False):
             correlation, p_value = spearmanr(epigenomes[column].values.ravel(), labels.values.ravel())
             if p_value > p_value_threshold:
-                print(column, correlation)
-            uncorrelated.add(column)
+                #print(column, correlation)
+                uncorrelated.add(column)
 
     def mine():
-        for column in tqdm(uncorrelated, desc="Running MINE test}", dynamic_ncols=True,
+        for column in tqdm(uncorrelated, desc="Running MINE test", dynamic_ncols=True,
                            leave=False):
             mine = MINE()
             mine.compute_score(epigenomes[column].values.ravel(), labels.values.ravel())
             score = mine.mic()
-            if score < correlation_threshold:
-                print(column, score)
-            else:
+            if score >= correlation_threshold:
                 uncorrelated.remove(column)
+          
+                
 
-    def drop():
+    def drop_feat():
         return epigenomes.drop(columns=[col for col in uncorrelated if col in epigenomes.columns])
 
     pearson()
     spearman()
     mine()
-    return drop()
+    return drop_feat()
 
 
 def drop_too_correlated(epigenomes: pd.DataFrame, p_value_threshold: float = 0.01,

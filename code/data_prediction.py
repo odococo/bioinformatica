@@ -18,7 +18,7 @@ from tqdm import tqdm
 from data_retrieval import get_holdout
 from defaults import get_default
 from meta_models import Model
-
+from scipy.stats import wilcoxon
 
 def _precomputed(results, model: Model, holdout: int) -> bool:
     df = pd.DataFrame(results)
@@ -30,8 +30,8 @@ def _precomputed(results, model: Model, holdout: int) -> bool:
     ).any()
 
 
-def _get_filename() -> str:
-    return f"results_{get_default('cell_line')}_{get_default('region')}.json"
+def _get_filename(typedata: str) -> str:
+    return f"results_{get_default('cell_line')}_{get_default('region')}_{typedata}.json"
 
 
 def _get_holdouts() -> StratifiedShuffleSplit:
@@ -65,8 +65,9 @@ def _get_result(model: Model, run_type: str, holdout: int, **kwargs) -> Dict:
 
 
 def predict_epigenomics(data: pd.DataFrame, labels: pd.DataFrame, models: List[Model]) -> List[Dict]:
-    if os.path.exists(_get_filename()):
-        with open(_get_filename()) as json_file:
+    filename=_get_filename("epi")
+    if os.path.exists(filename):
+        with open(filename) as json_file:
             results = json.load(json_file)
     else:
         results = []
@@ -75,70 +76,97 @@ def predict_epigenomics(data: pd.DataFrame, labels: pd.DataFrame, models: List[M
                                  desc="Computing holdouts", dynamic_ncols=True):
         for model, params in tqdm([model.get_model() for model in models], total=len(models), desc="Training models",
                                   leave=False, dynamic_ncols=True):
+            
             if _precomputed(results, model, i):
                 continue
             model.fit(data[train], labels[train], **params)
             results.append(_get_result(model, 'train', i, **_report(labels[train], model.predict(data[train]))))
             results.append(_get_result(model, 'test', i, **_report(labels[test], model.predict(data[test]))))
-            compress_json.local_dump(results, _get_filename())
+            print("end")
+            compress_json.local_dump(results, filename)
+
     return results
 
 
 def predict_sequences(sequences: pd.DataFrame, labels: pd.DataFrame, models: List[Model]) -> List[Dict]:
-    if os.path.exists(_get_filename()):
-        with open(_get_filename()) as json_file:
+    filename=_get_filename("seq")
+    if os.path.exists(filename):
+        with open(filename) as json_file:
             results = json.load(json_file)
     else:
         results = []
 
     for i, (train_index, test_index) in tqdm(enumerate(_get_holdouts().split(sequences, labels)),
-                                             total=get_default('splits'), desc="Computing holdouts",
-                                             dynamic_ncols=True):
+                                            total=get_default('splits'), desc="Computing holdouts",
+                                            dynamic_ncols=True):
         train, test = get_holdout(train_index, test_index, sequences, labels)
-        for model, params in tqdm([model.get_model() for model in models], total=len(models),
-                                  desc="Training models", leave=False, dynamic_ncols=True):
-            if _precomputed(results, model.name, i):
+        for model in tqdm(models, total=len(models), desc="Training models",
+                                leave=False, dynamic_ncols=True):
+            if _precomputed(results, model, i):
                 continue
-            history = model.model.fit(
+        
+            model,params=model.get_model()
+
+            print(model.metrics_names)
+            history = model.fit(
                 train,
                 validation_data=test,
                 steps_per_epoch=train.steps_per_epoch,
                 validation_steps=test.steps_per_epoch,
-                *params,
                 callbacks=[
-                    EarlyStopping(monitor="val_loss", mode="min", patience=50),
-                ]
+                    EarlyStopping(monitor="val_loss", mode="min", patience=50)
+                ],
+                epochs=1000,
+                shuffle=True,
+                verbose=False,
             ).history
             scores = pd.DataFrame(history).iloc[-1].to_dict()
-            results.append(_get_result(model, 'train', i, **_report(labels[train],
-                                                                    **{
+            
+            results.append(_get_result(model, 'train', i,
+                                                                   **{
                                                                         key: value
                                                                         for key, value in scores.items()
                                                                         if not key.startswith("val_")
                                                                     }
-                                                                    )))
-            results.append(_get_result(model, 'test', i, **_report(labels[test],
-                                                                   **{
-                                                                       key[4:]: value
-                                                                       for key, value in scores.items()
-                                                                       if key.startswith("val_")
-                                                                   }
-                                                                   )))
-            compress_json.local_dump(results, _get_filename())
+                                                                    ))
+            results.append(_get_result(model, 'test', i, 
+                                                                **{
+                                                                    key[4:]: value
+                                                                    for key, value in scores.items()
+                                                                    if key.startswith("val_")
+                                                                }
+                                                                ))
+            compress_json.local_dump(results, filename)
     return results
 
 
-def show_barplots(results: List[Dict]) -> None:
-    df = pd.DataFrame(results)
-    df = df.drop(columns=['holdout'])
+def show_barplots(results: List[Dict],datatype: str) -> None:
+    df = pd.DataFrame(results).drop(columns=['holdout'])
 
     barplots(
-        df,
-        groupby=["model", "run_type"],
-        show_legend=False,
-        height=5,
-        orientation="horizontal"
+    df,
+    groupby=["model", "run_type"],
+    show_legend=False,
+    height=5,
+    orientation="horizontal",
+    path=datatype+'/{feature}.png',
+    show_standard_deviation = True
     )
 
-    for x in glob("barplots/*.png"):
-        display(Image.open(x))
+    #for x in glob('./'+datatype+'/*.png'):
+    #    display(Image.open(x))
+     
+ 
+def t_wilcoxon(model1, model2, alpha) -> None: 
+    for metric in model1.columns[-4:]:
+        print(metric)
+        a,  b = model1[metric], model2[metric]
+        stats, p_value = wilcoxon(a, b)
+        if p_value > alpha:
+            print(p_value, "The two models performance are statistically identical.")
+        else:
+            print(p_value, "The two models performance are different")
+            if a.mean() > b.mean():
+                print("The first model is better")
+            else:
+                print("The second model is better")

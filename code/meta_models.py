@@ -72,7 +72,7 @@ def _get_sequential(default_name: str = 'Sequential'):
                       loss: str = 'binary_crossentropy', metrics: List = None,
                       epochs: int = 1000, batch_size: int = 1024,
                       validation_split: float = 0.1, shuffle: bool = True, verbose: bool = False,
-                      callbacks: List = None, **kwargs):
+                       **kwargs):
             name = name or default_name
             input_layers = (Input(shape=input_shape),)
             output_layers = (Dense(1, activation="sigmoid"),)
@@ -95,8 +95,7 @@ def _get_sequential(default_name: str = 'Sequential'):
                 'batch_size': batch_size,
                 'validation_split': validation_split,
                 'shuffle': shuffle,
-                'verbose': verbose,
-                'callbacks': callbacks
+                'verbose': verbose
             })
             model.summary()
             return Model(name, model, **kwargs)

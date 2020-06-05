@@ -1,8 +1,8 @@
 from typing import Tuple
 
-from tensorflow.python import Reshape
+#from tensorflow.python import Reshape
 from tensorflow.python.keras.layers import Dense, BatchNormalization, Activation, Dropout, ThresholdedReLU, \
-    AlphaDropout, Flatten, Conv2D
+    AlphaDropout, Flatten, Conv2D,Reshape
 
 from meta_models import Model
 
@@ -57,7 +57,10 @@ def get_ffnn_epigenomics_v3():
 
 def get_mlp_sequential():
     return Model.MLP(
-        Flatten()
+        Flatten(),
+        Dense(128, activation="relu"),
+        Dense(64, activation="relu"),
+        Dense(32, activation="relu"),
     )
 
 
@@ -76,7 +79,7 @@ def get_ffnn_sequential():
 
 def get_cnn_sequential_v1():
     return Model.CNN(
-        Reshape((200, 4, 1)),
+        Reshape((200, 4, 1),),
         Conv2D(64, kernel_size=(10, 2), activation="relu"),
         Conv2D(64, kernel_size=(10, 2), activation="relu"),
         Dropout(0.3),
