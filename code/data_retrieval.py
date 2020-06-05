@@ -4,12 +4,11 @@ import numpy as np
 import pandas as pd
 from epigenomic_dataset import load_epigenomes
 from keras_bed_sequence import BedSequence
-from mixed_sequence import MixedSequence
-#from keras_mixed_sequence import MixedSequence
 from tensorflow.keras.utils import Sequence
 from ucsc_genomes_downloader import Genome
 
 from defaults import get_default
+from mixed_sequence import MixedSequence
 
 
 def download_data(cell_line: str, region: str) -> Tuple[pd.DataFrame, pd.DataFrame]:

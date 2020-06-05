@@ -14,4 +14,5 @@ sanitize_ml_labels~=1.0.9
 barplots~=1.1.4
 Pillow~=7.1.2
 tensorboard~=2.2.2
-minepy
+minepy~=1.2.4
+seaborn~=0.10.1

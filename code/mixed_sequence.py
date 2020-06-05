@@ -1,22 +1,11 @@
-
-from typing import Dict, Union, Tuple
-
-import tensorflow as tf
-
-from tensorflow.keras.utils import Sequence
+from typing import Dict, Union, Tuple, List
 
 import numpy as np
-
-from typing import List
-
-
+import tensorflow as tf
+from tensorflow.keras.utils import Sequence
 
 
-
-
-
-def sequence_length(sequence: List, batch_size: int) -> int:
-
+def sequence_length(sequence: Union[List, np.ndarray], batch_size: int) -> int:
     """Return number of batch sizes contained in sequence.
 
 
@@ -45,8 +34,8 @@ def sequence_length(sequence: List, batch_size: int) -> int:
 
     return int(np.ceil(len(sequence) / float(batch_size)))
 
-def batch_slice(index: int, batch_size: int) -> slice:
 
+def batch_slice(index: int, batch_size: int) -> slice:
     """Return slice corresponding to given index for given batch_size.
 
 
@@ -77,7 +66,6 @@ def batch_slice(index: int, batch_size: int) -> slice:
 
 
 class NumpySequence(Sequence):
-
     """NumpySequence is a Sequence wrapper to uniform Numpy Arrays as Keras Sequences.
 
 
@@ -146,24 +134,21 @@ class NumpySequence(Sequence):
 
     """
 
-
-
     def __init__(
 
-        self,
+            self,
 
-        array: np.ndarray,
+            array: np.ndarray,
 
-        batch_size: int,
+            batch_size: int,
 
-        seed: int = 42,
+            seed: int = 42,
 
-        elapsed_epochs: int = 0,
+            elapsed_epochs: int = 0,
 
-        dtype = float
+            dtype=float
 
     ):
-
         """Return new NumpySequence object.
 
 
@@ -203,17 +188,13 @@ class NumpySequence(Sequence):
         """
 
         if array.dtype != dtype:
-
             array = array.astype(dtype)
 
         self._array, self._batch_size = array, batch_size
 
         self._seed, self._elapsed_epochs = seed, elapsed_epochs
 
-
-
     def on_epoch_end(self):
-
         """Shuffle private numpy array on every epoch end."""
 
         state = np.random.RandomState(seed=self._seed + self._elapsed_epochs)
@@ -222,24 +203,16 @@ class NumpySequence(Sequence):
 
         state.shuffle(self._array)
 
-
-
     def __len__(self) -> int:
-
         """Return length of Sequence."""
 
         return sequence_length(
-
             self._array,
-
             self._batch_size
 
         )
 
-
-
     def __getitem__(self, idx: int) -> np.ndarray:
-
         """Return batch corresponding to given index.
 
 
@@ -265,10 +238,7 @@ class NumpySequence(Sequence):
         return self._array[batch_slice(idx, self._batch_size)]
 
 
-
-
 class MixedSequence(Sequence):
-
     """Handles Mixed type input / output Sequences.
 
 
@@ -279,21 +249,17 @@ class MixedSequence(Sequence):
 
     """
 
-
-
     def __init__(
 
-        self,
+            self,
 
-        x: Union[Dict[str, Union[np.ndarray, Sequence]], np.ndarray, Sequence],
+            x: Union[Dict[str, Union[np.ndarray, Sequence]], np.ndarray, Sequence],
 
-        y: Union[Dict[str, Union[np.ndarray, Sequence]], np.ndarray, Sequence],
+            y: Union[Dict[str, Union[np.ndarray, Sequence]], np.ndarray, Sequence],
 
-        batch_size: int
+            batch_size: int
 
     ):
-
-     
 
         # Casting to dictionary if not one already
 
@@ -305,8 +271,6 @@ class MixedSequence(Sequence):
 
         ]
 
-
-
         # Retrieving sequence length
 
         self._sequence_length = None
@@ -316,20 +280,14 @@ class MixedSequence(Sequence):
         for candidate in (*x.values(), *y.values()):
 
             if isinstance(candidate, Sequence):
-
                 self._sequence_length = len(candidate)
 
                 break
 
-
-
         # Veryfing that at least a sequence was provided
 
         if self._sequence_length is None:
-
             raise ValueError("No Sequence was provided.")
-
-
 
         # Converting numpy arrays to Numpy Sequences
 
@@ -349,8 +307,6 @@ class MixedSequence(Sequence):
 
         ]
 
-
-
         # Checking that every value within the dictionaries
 
         # is now a sequence with the same length.
@@ -360,18 +316,13 @@ class MixedSequence(Sequence):
             for _, value in dictionary.items():
 
                 if len(self) != len(value):
-
                     raise ValueError(
 
                         "One or given sub-Sequence does not match length of other Sequences."
 
                     )
 
-
-
         self._x, self._y = x, y
-
-
 
     def on_epoch_end(self):
 
@@ -380,10 +331,7 @@ class MixedSequence(Sequence):
         for dictionary in (self._x, self._y):
 
             for _, value in dictionary.items():
-
                 value.on_epoch_end()
-
-
 
     def __len__(self) -> int:
 
@@ -391,17 +339,12 @@ class MixedSequence(Sequence):
 
         return self._sequence_length
 
-
-
     @property
-
     def steps_per_epoch(self) -> int:
 
         """Return length of Sequence."""
 
         return len(self)
-
-
 
     def __getitem__(self, idx: int) -> Tuple[
 
@@ -434,31 +377,17 @@ class MixedSequence(Sequence):
         """
 
         return tuple([
-
-            {
-
-                key: sequence[idx]
-
-                for key, sequence in dictionary.items()
-
-            } if len(dictionary) > 1 else next(iter(dictionary.values()))[idx]
-
-            for dictionary in [
-
+                         {
+                             key: sequence[idx]
+                             for key, sequence in dictionary.items()
+                         } if len(dictionary) > 1 else next(iter(dictionary.values()))[idx]
+                         for dictionary in [
                 self._x,
-
                 self._y
-
             ]
-
-        ] + (
-
-            []
-
-            if tf.__version__.startswith("1.14")
-
-            else
-
-            [{key: None for key in self._y}]
-
-        ))
+                     ] + (
+                         []
+                         if tf.__version__.startswith("1.14")
+                         else
+                         [{key: None for key in self._y}]
+                     ))

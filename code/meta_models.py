@@ -1,27 +1,32 @@
-from typing import Tuple, List, Union
 from multiprocessing import cpu_count
+from typing import Tuple, List, Union
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
-
 from tensorflow.keras.layers import Layer, Input, Dense
 from tensorflow.keras.metrics import AUC
 from tensorflow.keras.models import Sequential
 
+from defaults import get_default
+
 
 class Model:
+    # to avoid warning in other files
+    MLP = None
+    FFNN = None
+    CNN = None
+
     def __init__(self, name: str, model: Union[Sequential, RandomForestClassifier, DecisionTreeClassifier], **kwargs):
         self.name = name
         self.model = model
         self.kwargs = kwargs
 
-    def __getattr__(self, item):
-        print(item)
-
     def __str__(self) -> str:
+        """Name of the model"""
         return self.name
 
     def __repr__(self) -> str:
+        """Name of the model"""
         return self.name
 
     def get_model(self) -> Tuple:
@@ -39,6 +44,7 @@ def _get_decision_tree(default_name: str = 'DecisionTree', criterion: str = 'gin
             class_weight=class_weight
         )
         return Model(name, model, **kwargs)
+
     return get_model
 
 
@@ -59,6 +65,7 @@ def _get_random_forest(default_name: str = 'RandomForest', n_estimators: int = 5
             n_jobs=n_jobs
         )
         return Model(name, model, **kwargs)
+
     return get_model
 
 
@@ -68,11 +75,11 @@ Model.RandomForest = _get_random_forest()
 def _get_sequential(default_name: str = 'Sequential'):
     # no first and last layer
     def get_layers(*hidden_layers: Tuple[Layer]):
-        def get_model(input_shape: Tuple[int], name: str = None, optimizer: str = 'nadam',
-                      loss: str = 'binary_crossentropy', metrics: List = None,
-                      epochs: int = 1000, batch_size: int = 1024,
-                      validation_split: float = 0.1, shuffle: bool = True, verbose: bool = False,
-                       **kwargs):
+        def get_model(input_shape: Tuple[int], name: str = None, optimizer: str = get_default('nadam'),
+                      loss: str = get_default('loss'), metrics: List = None,
+                      epochs: int = get_default('epochs'), batch_size: int = get_default('batch_size'),
+                      validation_split: float = get_default('validation_split'), shuffle: bool = True,
+                      verbose: bool = get_default('verbose'), **kwargs):
             name = name or default_name
             input_layers = (Input(shape=input_shape),)
             output_layers = (Dense(1, activation="sigmoid"),)

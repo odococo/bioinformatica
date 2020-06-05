@@ -1,15 +1,15 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-
 from typing import Dict, List, Tuple
 
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from minepy import MINE
 from scipy.stats import pearsonr, spearmanr, entropy
 from sklearn.impute import KNNImputer
 from sklearn.metrics import euclidean_distances
 from sklearn.preprocessing import RobustScaler
 from tqdm import tqdm
-from minepy import MINE
 
 
 def overfitting_risk(epigenomes: Dict[str, pd.DataFrame], threshold: int = 1) -> bool:
@@ -26,26 +26,11 @@ def nan_check(epigenomes: Dict[str, pd.DataFrame]) -> None:
         print("\n".join((
             f"Nan values report for {region} data:",
             f"In the document there are {data.isna().values.sum()} NaN values out of {data.values.size} values.",
-            f"The sample with most values has {data.isna().sum(axis=0).max()} NaN values out of {data.shape[1]} values.",
+            f"The sample with most values has {data.isna().sum(axis=0).max()} "
+            f"NaN values out of {data.shape[1]} values.",
             f"The feature with most values has {data.isna().sum().max()} NaN values out of {data.shape[0]} values."
         )))
         print("=" * 80)
-
-
-def fit_constant(data: pd.DataFrame, value: int) -> pd.DataFrame:
-    return data.fillna(value)
-
-
-def fit_media(data: pd.DataFrame) -> pd.DataFrame:
-    return fit_constant(data, data.mean())
-
-
-def fit_median(data: pd.DataFrame) -> pd.DataFrame:
-    return fit_constant(data, data.median())
-
-
-def fit_mode(data: pd.DataFrame) -> pd.DataFrame:
-    return fit_constant(data, data.mode())
 
 
 def fit_neighbours(data: pd.DataFrame, neighbors: int = 5) -> pd.DataFrame:
@@ -64,14 +49,14 @@ def check_class_balance(labels: Dict[str, pd.DataFrame]) -> None:
     fig.show()
 
 
-def drop_constant_features(region:str,epigenomes: pd.DataFrame) -> pd.DataFrame:
+def drop_constant_features(region: str, epigenomes: pd.DataFrame) -> pd.DataFrame:
     def drop(df: pd.DataFrame) -> pd.DataFrame:
         return df.loc[:, (df != df.iloc[0]).any()]
 
     result = drop(epigenomes)
     if epigenomes.shape[1] != result.shape[1]:
         print(f"Features in {region} were constant and had to be dropped!")
-        epigenomes= result
+        epigenomes = result
     else:
         print(f"No constant features were found in {region}!")
     return epigenomes
@@ -97,7 +82,7 @@ def drop_uncorrelated(epigenomes: pd.DataFrame, labels: pd.DataFrame,
                            leave=False):
             correlation, p_value = pearsonr(epigenomes[column].values.ravel(), labels.values.ravel())
             if p_value > p_value_threshold:
-                #print(column, correlation)
+                # print(column, correlation)
                 uncorrelated.add(column)
 
     def spearman():
@@ -105,7 +90,7 @@ def drop_uncorrelated(epigenomes: pd.DataFrame, labels: pd.DataFrame,
                            leave=False):
             correlation, p_value = spearmanr(epigenomes[column].values.ravel(), labels.values.ravel())
             if p_value > p_value_threshold:
-                #print(column, correlation)
+                # print(column, correlation)
                 uncorrelated.add(column)
 
     def mine():
@@ -116,8 +101,6 @@ def drop_uncorrelated(epigenomes: pd.DataFrame, labels: pd.DataFrame,
             score = mine.mic()
             if score >= correlation_threshold:
                 uncorrelated.remove(column)
-          
-                
 
     def drop_feat():
         return epigenomes.drop(columns=[col for col in uncorrelated if col in epigenomes.columns])
@@ -145,12 +128,12 @@ def drop_too_correlated(epigenomes: pd.DataFrame, p_value_threshold: float = 0.0
                 correlation = np.abs(correlation)
                 scores.append((correlation, column, feature))
                 if p_value < p_value_threshold and correlation > correlation_threshold:
-                    print(column, feature, correlation)
                     if entropy(epigenomes[column]) > entropy(epigenomes[feature]):
                         extremely_correlated.add(feature)
                     else:
                         extremely_correlated.add(column)
 
+    pearson()
     return sorted(scores, key=lambda x: np.abs(x[0]), reverse=True)
 
 

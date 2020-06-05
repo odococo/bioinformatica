@@ -1,8 +1,5 @@
-from typing import Tuple
-
-#from tensorflow.python import Reshape
 from tensorflow.python.keras.layers import Dense, BatchNormalization, Activation, Dropout, ThresholdedReLU, \
-    AlphaDropout, Flatten, Conv2D,Reshape
+    AlphaDropout, Flatten, Conv2D, Reshape
 
 from meta_models import Model
 

@@ -7,10 +7,16 @@ _defaults = {
     'assembly': "hg19",
     'nucleotides': "actg",
     'batch_size': 1024,
+    'epochs': 1000,
     'splits': 50,
     'cell_line': '',
     'region': '',
-    'test_size': 0.2
+    'test_size': 0.2,
+    'validation_split': 0.1,
+    'alpha': 0.1,
+    'verbose': False,
+    'optimizer': 'nadam',
+    'loss': 'binary_crossentropy'
 }
 
 
