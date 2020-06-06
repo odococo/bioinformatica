@@ -21,7 +21,3 @@ def test_checks():
     check_class_balance(labels)
 
     rmtree('datasets')
-
-
-if __name__ == '__main__':
-    test_checks()
