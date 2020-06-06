@@ -34,7 +34,3 @@ def test_data_prediction():
     ]
     results = predict_epigenomics(input_data_epi.values, output_data.values.ravel(), epi_models)
     show_barplots(results, 'epi')
-
-
-if __name__ == '__main__':
-    test_data_prediction()

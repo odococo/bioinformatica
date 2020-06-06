@@ -15,7 +15,3 @@ def test_wilcoxon():
         (df.run_type == "test")
     ]
     t_wilcoxon(models[models.model == 'MLP1'], models[models.model == 'MLP2'])
-
-
-if __name__ == '__main__':
-    test_wilcoxon()
