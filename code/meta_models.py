@@ -22,11 +22,11 @@ class Model:
         self.kwargs = kwargs
 
     def __str__(self) -> str:
-        """Name of the model"""
+        """Name of the model."""
         return self.name
 
     def __repr__(self) -> str:
-        """Name of the model"""
+        """Name of the model."""
         return self.name
 
     def get_model(self) -> Tuple:
