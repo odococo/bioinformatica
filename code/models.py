@@ -4,7 +4,7 @@ from tensorflow.python.keras.layers import Dense, BatchNormalization, Activation
 from meta_models import Model
 
 
-def get_mlp_egigenomics():
+def get_mlp_epigenomics():
     return Model.MLP(
         Dense(128, activation="relu"),
         Dense(64, activation="relu"),

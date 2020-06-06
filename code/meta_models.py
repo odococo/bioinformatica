@@ -75,7 +75,7 @@ Model.RandomForest = _get_random_forest()
 def _get_sequential(default_name: str = 'Sequential'):
     # no first and last layer
     def get_layers(*hidden_layers: Tuple[Layer]):
-        def get_model(input_shape: Tuple[int], name: str = None, optimizer: str = get_default('nadam'),
+        def get_model(input_shape: Tuple[int], name: str = None, optimizer: str = get_default('optimizer'),
                       loss: str = get_default('loss'), metrics: List = None,
                       epochs: int = get_default('epochs'), batch_size: int = get_default('batch_size'),
                       validation_split: float = get_default('validation_split'), shuffle: bool = True,
