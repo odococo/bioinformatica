@@ -51,12 +51,6 @@ def get_filtered_with_boruta(epigenomes: pd.DataFrame, labels: pd.DataFrame,
 
 
 def get_tasks(epigenomes: Dict[str, pd.DataFrame], labels: Dict[str, pd.DataFrame], sequences: Dict[str, pd.DataFrame]):
-    def check_tasks(xs, ys, titles: List[str]) -> Tuple:
-        assert len(xs) == len(ys) == len(titles)
-        for x, y in zip(xs, ys):
-            assert x.shape[0] == y.shape[0]
-        return xs, ys, titles
-
     tasks = {
         "x": [
             *[
@@ -86,7 +80,7 @@ def get_tasks(epigenomes: Dict[str, pd.DataFrame], labels: Dict[str, pd.DataFram
         ]
     }
 
-    return check_tasks(tasks['x'], tasks['y'], tasks['title'])
+    return tasks['x'], tasks['y'], tasks['title']
 
 
 def _sklearn_tsne(data: np.ndarray, perplexity: int, dimensionality_threshold: int = 50):
@@ -108,6 +102,7 @@ def show_decomposed_data(xs, ys, titles):
             axis.xaxis.set_visible(False)
             axis.yaxis.set_visible(False)
             axis.set_title(f"PCA decomposition - {title}")
+        fig.tight_layout()
         plt.show()
 
     def show_tsne():

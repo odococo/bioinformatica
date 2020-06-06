@@ -80,7 +80,7 @@ def drop_uncorrelated(epigenomes: pd.DataFrame, labels: pd.DataFrame,
     def pearson():
         for column in tqdm(epigenomes.columns, desc="Running Pearson test", dynamic_ncols=True,
                            leave=False):
-            correlation, p_value = pearsonr(epigenomes[column].values.ravel(), labels.values.ravel())
+            _, p_value = pearsonr(epigenomes[column].values.ravel(), labels.values.ravel())
             if p_value > p_value_threshold:
                 # print(column, correlation)
                 uncorrelated.add(column)
@@ -88,7 +88,7 @@ def drop_uncorrelated(epigenomes: pd.DataFrame, labels: pd.DataFrame,
     def spearman():
         for column in tqdm(epigenomes.columns, desc="Running Spearman test", dynamic_ncols=True,
                            leave=False):
-            correlation, p_value = spearmanr(epigenomes[column].values.ravel(), labels.values.ravel())
+            _, p_value = spearmanr(epigenomes[column].values.ravel(), labels.values.ravel())
             if p_value > p_value_threshold:
                 # print(column, correlation)
                 uncorrelated.add(column)

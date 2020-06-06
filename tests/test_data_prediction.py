@@ -29,13 +29,13 @@ def test_data_prediction():
     epi_models = [
         get_mlp_epigenomics()(shape, name="MLP")
     ]
-    results_epi = predict_epigenomics(input_data_epi.values, output_data.values.ravel(), epi_models)
+    _ = predict_epigenomics(input_data_epi.values, output_data.values.ravel(), epi_models)
 
     shape = (get_default('window_size'), len(get_default('nucleotides')))
     seq_models = [
         get_mlp_sequential()(shape, name="MLP")
     ]
-    results_seq = predict_sequences(input_data_seq, output_data.values.ravel(), seq_models)
+    _ = predict_sequences(input_data_seq, output_data.values.ravel(), seq_models)
     rmtree('datasets')
     rmtree('genome')
     rmtree('epi')

@@ -103,9 +103,8 @@ def predict_sequences(sequences: pd.DataFrame, labels: pd.DataFrame, models: Lis
             if _precomputed(results, model, i):
                 continue
 
-            model, params = model.get_model()
+            model, _ = model.get_model()
 
-            print(model.metrics_names)
             history = model.fit(
                 train,
                 validation_data=test,
@@ -159,7 +158,7 @@ def t_wilcoxon(model1, model2) -> None:
     for metric in model1.columns[-4:]:
         print(metric)
         a, b = model1[metric], model2[metric]
-        stats, p_value = wilcoxon(a, b)
+        _, p_value = wilcoxon(a, b)
         if p_value > get_default('alpha'):
             print(p_value, "The two models performance are statistically identical.")
         else:
