@@ -1,3 +1,5 @@
+from shutil import rmtree
+
 from bioinformatica.data_analysis import get_filtered_with_boruta
 from bioinformatica.data_manipulation import fit_neighbours, apply_z_scoring, drop_constant_features, drop_uncorrelated
 from bioinformatica.data_prediction import predict_epigenomics, predict_sequences
@@ -34,3 +36,9 @@ def test_data_prediction():
         get_mlp_sequential()(shape, name="MLP")
     ]
     results_seq = predict_sequences(input_data_seq, output_data.values.ravel(), seq_models)
+    rmtree('datasets')
+    rmtree('genome')
+    rmtree('epi')
+    rmtree('seq')
+    rmtree('results_HEK293_enhancers_epi.json')
+    rmtree('results_HEK293_enhancers_seq.json')
