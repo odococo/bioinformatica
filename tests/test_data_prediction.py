@@ -35,10 +35,10 @@ def test_data_prediction():
     seq_models = [
         get_mlp_sequential()(shape, name="MLP")
     ]
-    _ = predict_sequences(input_data_seq, output_data.values.ravel(), seq_models)
+    # _ = predict_sequences(input_data_seq, output_data.values.ravel(), seq_models)
     rmtree('datasets')
-    rmtree('genome')
+    # rmtree('genome')
     rmtree('epi')
-    rmtree('seq')
+    # rmtree('seq')
     rmtree('results_HEK293_enhancers_epi.json')
-    rmtree('results_HEK293_enhancers_seq.json')
+    # rmtree('results_HEK293_enhancers_seq.json')
