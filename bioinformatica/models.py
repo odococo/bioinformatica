@@ -1,7 +1,7 @@
 from tensorflow.python.keras.layers import Dense, BatchNormalization, Activation, Dropout, ThresholdedReLU, \
     AlphaDropout, Flatten, Conv2D, Reshape
 
-from meta_models import Model
+from .meta_models import Model
 
 
 def get_mlp_epigenomics():

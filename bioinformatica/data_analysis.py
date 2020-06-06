@@ -11,7 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.manifold import TSNE as STSNE
 from tqdm import tqdm
 
-from defaults import get_default
+from .defaults import get_default
 
 
 def _pca(data: Union[pd.DataFrame, np.ndarray], n_components: int = 2) -> np.ndarray:

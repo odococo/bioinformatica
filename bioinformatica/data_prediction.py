@@ -13,9 +13,9 @@ from sklearn.model_selection import StratifiedShuffleSplit
 from tensorflow.python.keras.callbacks import EarlyStopping
 from tqdm import tqdm
 
-from data_retrieval import get_holdout
-from defaults import get_default
-from meta_models import Model
+from .data_retrieval import get_holdout
+from .defaults import get_default
+from .meta_models import Model
 
 
 def _precomputed(results, model: Model, holdout: int) -> bool:

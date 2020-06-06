@@ -7,8 +7,8 @@ from keras_bed_sequence import BedSequence
 from tensorflow.keras.utils import Sequence
 from ucsc_genomes_downloader import Genome
 
-from defaults import get_default
-from mixed_sequence import MixedSequence
+from .defaults import get_default
+from .mixed_sequence import MixedSequence
 
 
 def download_data(cell_line: str, region: str) -> Tuple[pd.DataFrame, pd.DataFrame]:

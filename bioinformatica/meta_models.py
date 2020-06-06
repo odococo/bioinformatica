@@ -7,7 +7,7 @@ from tensorflow.keras.layers import Layer, Input, Dense
 from tensorflow.keras.metrics import AUC
 from tensorflow.keras.models import Sequential
 
-from defaults import get_default
+from .defaults import get_default
 
 
 class Model:
