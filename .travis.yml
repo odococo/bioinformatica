@@ -12,7 +12,7 @@ python:
 - '3.6'
 before_install:
   - pip install --upgrade pytest
-  - pip install -r ./code/requirements.txt
+  - pip install -r ./bioinformatica/requirements.txt
 install:
 - pip install .[test]
 before_script:
