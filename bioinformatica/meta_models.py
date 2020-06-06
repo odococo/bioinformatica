@@ -12,6 +12,8 @@ from .defaults import get_default
 
 class Model:
     # to avoid warning in other files
+    Sequential = None
+    Perceptron = None
     MLP = None
     FFNN = None
     CNN = None

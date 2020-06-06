@@ -120,3 +120,6 @@ def show_decomposed_data(xs, ys, titles):
                 axis.set_title(f"TSNE decomposition - {title}")
             fig.tight_layout()
             plt.show()
+
+    show_pca()
+    show_tsne()

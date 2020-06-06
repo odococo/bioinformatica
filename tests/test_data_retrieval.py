@@ -8,7 +8,3 @@ def test_data_retrieval():
     region = 'promoters'
     data_retrieval(cell_line=cell_line, region=region)
     rmtree('datasets')
-
-
-if __name__ == '__main__':
-    test_data_retrieval()

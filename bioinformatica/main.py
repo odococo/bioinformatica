@@ -11,7 +11,6 @@ set_default(
     cell_line='HEK293',
     region='promoters',
     dataset_path=r'C:\Users\matte\Documents\GitHub\bioinformatica\HepG2\datasets'
-
 )
 
 if __name__ == '__main__':
@@ -23,9 +22,11 @@ if __name__ == '__main__':
     input_data_epi = fit_neighbours(input_data_o, 5)  # NaN imputation
     input_data_epi = apply_z_scoring(input_data_epi)  # Normalizing
     # feature selection
-    #input_data_epi = drop_constant_features(get_default('region'), input_data_epi)
-    #input_data_epi = drop_uncorrelated(input_data_epi, output_data)
-    #input_data_epi = get_filtered_with_boruta(input_data_epi, output_data, get_default('cell_line'),get_default('region'))
+    input_data_epi = drop_constant_features(get_default('region'), input_data_epi)
+    input_data_epi = drop_uncorrelated(input_data_epi, output_data)
+    input_data_epi = get_filtered_with_boruta(input_data_epi, output_data,
+                                              get_default('cell_line'),
+                                              get_default('region'))
 
     shape = (input_data_epi.shape[1],)
     epi_models = [
