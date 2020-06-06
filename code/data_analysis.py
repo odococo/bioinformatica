@@ -66,15 +66,6 @@ def get_tasks(epigenomes: Dict[str, pd.DataFrame], labels: Dict[str, pd.DataFram
             *[
                 val.values
                 for val in sequences.values()
-            ],
-            pd.concat(sequences.values()).values,
-            pd.concat(sequences.values()).values,
-            *[
-                np.hstack([
-                    _pca(epigenomes[region], n_components=25),
-                    _mfa(sequences[region], n_components=25)
-                ])
-                for region in epigenomes
             ]
         ],
         "y": [
@@ -85,23 +76,13 @@ def get_tasks(epigenomes: Dict[str, pd.DataFrame], labels: Dict[str, pd.DataFram
             *[
                 val.values.ravel()
                 for val in labels.values()
-            ],
-            pd.concat(labels.values()).values.ravel(),
-            np.vstack([np.ones_like(labels["promoters"]), np.zeros_like(labels["enhancers"])]).ravel(),
-            *[
-                val.values.ravel()
-                for val in labels.values()
-            ],
+            ]
         ],
         "titles": [
             "Epigenomes promoters",
             "Epigenomes enhancers",
             "Sequences promoters",
-            "Sequences enhancers",
-            "Sequences active regions",
-            "Sequences regions types",
-            "Combined promoters data",
-            "Combined enhancers data"
+            "Sequences enhancers"
         ]
     }
 
@@ -130,7 +111,7 @@ def show_decomposed_data(xs, ys, titles):
         plt.show()
 
     def show_tsne():
-        for perpexity in tqdm((30, 40, 50, 100, 500, 5000), desc="Running perplexities"):
+        for perpexity in tqdm((30, 40), desc="Running perplexities"):
             fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(40, 20))
             for x, y, title, axis in tqdm(zip(xs, ys, titles, axes.flatten()), desc="Computing TSNEs", total=len(xs)):
                 axis.scatter(*_sklearn_tsne(x, perplexity=perpexity).T, s=1, color=colors[y])
