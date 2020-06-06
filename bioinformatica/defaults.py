@@ -16,7 +16,8 @@ _defaults = {
     'alpha': 0.1,
     'verbose': False,
     'optimizer': 'nadam',
-    'loss': 'binary_crossentropy'
+    'loss': 'binary_crossentropy',
+    'boruta_iterations': 10
 }
 
 

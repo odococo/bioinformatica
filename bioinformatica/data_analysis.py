@@ -37,7 +37,7 @@ def get_filtered_with_boruta(epigenomes: pd.DataFrame, labels: pd.DataFrame,
             n_estimators='auto',
             verbose=2,
             alpha=0.05,  # p_value
-            max_iter=10,  # In practice one would run at least 100-200 times
+            max_iter=get_default('boruta_iterations'),  # In practice one would run at least 100-200 times
             random_state=42
         )
         boruta_selector.fit(data.values, label.values.ravel())
