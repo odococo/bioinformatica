@@ -14,10 +14,7 @@ def test_wilcoxon():
     models = df[
         (df.run_type == "test")
     ]
-    print(models)
-    print(models[models.model == 'MLP'])
-    print(models[models.model == 'Perceptron'])
-    t_wilcoxon(models[models.model == 'MLP'], models[models.model == 'Perceptron'])
+    t_wilcoxon(models[models.model == 'MLP1'], models[models.model == 'MLP2'])
 
 
 if __name__ == '__main__':

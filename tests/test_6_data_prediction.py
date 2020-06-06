@@ -5,7 +5,6 @@ from bioinformatica.data_manipulation import fit_neighbours, apply_z_scoring, dr
 from bioinformatica.data_prediction import predict_epigenomics, show_barplots
 from bioinformatica.data_retrieval import data_retrieval, to_bed
 from bioinformatica.defaults import set_default, get_default
-from bioinformatica.meta_models import Model
 from bioinformatica.models import get_mlp_epigenomics, get_ffnn_epigenomics_v1
 
 
@@ -30,8 +29,8 @@ def test_data_prediction():
                                               get_default('region'))
     shape = (input_data_epi.shape[1],)
     epi_models = [
-        get_mlp_epigenomics()(shape, name="MLP"),
-        Model.Perceptron(shape, name="Perceptron")
+        get_mlp_epigenomics()(shape, name="MLP1"),
+        get_ffnn_epigenomics_v1()(shape, name="MLP2")
     ]
     results = predict_epigenomics(input_data_epi.values, output_data.values.ravel(), epi_models)
     show_barplots(results, 'epi')

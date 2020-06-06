@@ -156,9 +156,9 @@ def show_barplots(results: List[Dict], datatype: str) -> None:
 
 def t_wilcoxon(model1, model2) -> None:
     for metric in model1.columns[-4:]:
-        print(metric)
         if metric not in ['AUROC', 'AUPRC']:
             continue
+        print(metric)
         a, b = model1[metric], model2[metric]
         _, p_value = wilcoxon(a, b)
         if p_value > get_default('alpha'):
