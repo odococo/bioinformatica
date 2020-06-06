@@ -17,7 +17,8 @@ _defaults = {
     'verbose': False,
     'optimizer': 'nadam',
     'loss': 'binary_crossentropy',
-    'boruta_iterations': 10
+    'boruta_iterations': 10,
+    'results_path': ''
 }
 
 

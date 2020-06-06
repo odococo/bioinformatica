@@ -1,9 +1,9 @@
-from .data_analysis import get_filtered_with_boruta
-from .data_manipulation import fit_neighbours, apply_z_scoring, drop_constant_features, drop_uncorrelated
-from .data_prediction import predict_epigenomics, predict_sequences, show_barplots
-from .data_retrieval import data_retrieval, to_bed
-from .defaults import set_default, get_default
-from .models import get_mlp_epigenomics, get_ffnn_epigenomics_v1, get_ffnn_epigenomics_v2, get_ffnn_epigenomics_v3, \
+from bioinformatica.data_analysis import get_filtered_with_boruta
+from bioinformatica.data_manipulation import fit_neighbours, apply_z_scoring, drop_constant_features, drop_uncorrelated
+from bioinformatica.data_prediction import predict_epigenomics, predict_sequences, show_barplots
+from bioinformatica.data_retrieval import data_retrieval, to_bed
+from bioinformatica.defaults import set_default, get_default
+from bioinformatica.models import get_mlp_epigenomics, get_ffnn_epigenomics_v1, get_ffnn_epigenomics_v2, get_ffnn_epigenomics_v3, \
     get_mlp_sequential, get_ffnn_sequential, get_cnn_sequential_v1
 
 set_default(

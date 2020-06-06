@@ -29,7 +29,7 @@ def _precomputed(results, model: Model, holdout: int) -> bool:
 
 
 def _get_filename(typedata: str) -> str:
-    return f"results_{get_default('cell_line')}_{get_default('region')}_{typedata}.json"
+    return f"{get_default('results_path')}/results_{get_default('cell_line')}_{get_default('region')}_{typedata}.json"
 
 
 def _get_holdouts() -> StratifiedShuffleSplit:
