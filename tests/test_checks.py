@@ -1,3 +1,5 @@
+from shutil import rmtree
+
 from bioinformatica.data_manipulation import overfitting_risk, nan_check, check_class_balance
 from bioinformatica.data_retrieval import data_retrieval
 
@@ -17,3 +19,9 @@ def test_checks():
     overfitting_risk(epigenomes)
     nan_check(epigenomes)
     check_class_balance(labels)
+
+    rmtree('datasets')
+
+
+if __name__ == '__main__':
+    test_checks()

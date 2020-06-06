@@ -15,7 +15,7 @@ from tqdm import tqdm
 def overfitting_risk(epigenomes: Dict[str, pd.DataFrame], threshold: int = 1) -> bool:
     valid = False
     for region, data in epigenomes.items():
-        rate = data[0] / data[1]
+        rate = data.shape[0] / data.shape[1]
         print(f'Rate for {region} is {rate}')
         valid = valid or (rate < threshold)
     return valid
