@@ -14,17 +14,14 @@ def test_data_prediction():
         splits=2,
         batch_size=1024,
         results_path=f'{os.getcwd()}/results',
-        assembly_path=f'{os.getcwd()}/genomes'
+        assembly_path=f'{os.getcwd()}/genomes',
+        patience=1
     )
-    input_data, output_data = data_retrieval(get_default('cell_line'), get_default('region'))
-    input_data_seq = to_bed(input_data)
+    input_data_seq, output_data = data_retrieval(get_default('cell_line'), get_default('region'))
+    input_data_seq = to_bed(input_data_seq)
     shape = (get_default('window_size'), len(get_default('nucleotides')))
     seq_models = [
         get_mlp_sequential()(shape, name="MLP")
     ]
     results = predict_sequences(input_data_seq, output_data.values.ravel(), seq_models)
     show_barplots(results, 'seq')
-
-
-if __name__ == '__main__':
-    test_data_prediction()

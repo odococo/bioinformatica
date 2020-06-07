@@ -1,7 +1,6 @@
 from typing import Dict, Union, Tuple, List
 
 import numpy as np
-import tensorflow as tf
 from tensorflow.keras.utils import Sequence
 
 
@@ -247,17 +246,12 @@ class MixedSequence(Sequence):
         """
 
         return tuple([
-                         {
-                             key: sequence[idx]
-                             for key, sequence in dictionary.items()
-                         } if len(dictionary) > 1 else next(iter(dictionary.values()))[idx]
-                         for dictionary in [
+            {
+                key: sequence[idx]
+                for key, sequence in dictionary.items()
+            } if len(dictionary) > 1 else next(iter(dictionary.values()))[idx]
+            for dictionary in [
                 self._x,
                 self._y
             ]
-                     ] + (
-                         []
-                         if tf.__version__.startswith("1.14")
-                         else
-                         [{key: None for key in self._y}]
-                     ))
+        ])

@@ -109,7 +109,7 @@ def predict_sequences(sequences: pd.DataFrame, labels: pd.DataFrame, models: Lis
                 steps_per_epoch=train.steps_per_epoch,
                 validation_steps=test.steps_per_epoch,
                 callbacks=[
-                    EarlyStopping(monitor="val_loss", mode="min", patience=50)
+                    EarlyStopping(monitor="val_loss", mode="min", patience=get_default('patience'))
                 ],
                 **params
             ).history

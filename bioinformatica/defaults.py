@@ -19,7 +19,8 @@ _defaults = {
     'loss': 'binary_crossentropy',
     'boruta_iterations': 10,
     'results_path': '',
-    'shuffle': True
+    'shuffle': True,
+    'patience': 50
 }
 
 
