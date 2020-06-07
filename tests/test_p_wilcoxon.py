@@ -14,4 +14,4 @@ def test_wilcoxon():
     models = df[
         (df.run_type == "test")
     ]
-    t_wilcoxon(models[models.model == 'MLP1'], models[models.model == 'MLP2'])
+    t_wilcoxon(models[models.model == 'MLP'], models[models.model == 'FFNN'])

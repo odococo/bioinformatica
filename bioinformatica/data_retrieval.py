@@ -40,7 +40,7 @@ def to_bed(data: pd.DataFrame) -> pd.DataFrame:
 
 def get_genome() -> Genome:
     """Download genome or retrieve it if given path"""
-    return Genome(get_default('assembly'))
+    return Genome('hg19', cache_directory=get_default('assembly_path'))
 
 
 def one_hot_encode(data: pd.DataFrame, genome: Genome) -> np.ndarray:

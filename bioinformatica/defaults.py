@@ -4,7 +4,7 @@ _defaults = {
     'dataset': "fantom",
     'window_size': 200,
     'dataset_path': "datasets",
-    'assembly': "hg19",
+    'assembly_path': "genomes",
     'nucleotides': "actg",
     'batch_size': 1024,
     'epochs': 1000,
