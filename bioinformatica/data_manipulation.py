@@ -138,10 +138,11 @@ def drop_too_correlated(epigenomes: pd.DataFrame, p_value_threshold: float = 0.0
 
 
 def show(epigenomes: Dict[str, pd.DataFrame], labels: Dict[str, pd.DataFrame], scores: Dict[str, List[Tuple]]):
-    def get_data(region: str, how_many: int, from_start: bool = True) -> List[Tuple]:
+    def get_data(region: str, how_many: int, from_start: bool) -> List[Tuple]:
         data = scores[region][:how_many] if from_start else scores[region][-how_many:]
-        data = list(zip(data))[1:]
-        columns = list(set([column for row in data for column in row]))
+        _, first, second = list(zip(*data))
+        columns = list(set(first + second))
+        print(columns)
         return columns
 
     def plot(how_many: int, correlated: bool) -> None:

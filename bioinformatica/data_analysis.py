@@ -116,4 +116,4 @@ def show_decomposed_data(xs, ys, titles):
             plt.show()
 
     show_pca()
-    show_tsne()
+    # show_tsne()
