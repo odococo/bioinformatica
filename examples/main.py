@@ -30,19 +30,19 @@ if __name__ == '__main__':
 
     shape = (input_data_epi.shape[1],)
     epi_models = [
-        get_mlp_epigenomics()(shape, name="MLP"),
-        get_ffnn_epigenomics_v1()(shape, name="FFNN_1"),
-        get_ffnn_epigenomics_v2()(shape, name="FFNN_2"),
-        get_ffnn_epigenomics_v3()(shape, name="FFNN_3")
+        get_mlp_epigenomics()(shape, validation_split=0.1, name="MLP"),
+        get_ffnn_epigenomics_v1()(shape, validation_split=0.1, name="FFNN_1"),
+        get_ffnn_epigenomics_v2()(shape, validation_split=0.1, name="FFNN_2"),
+        get_ffnn_epigenomics_v3()(shape, validation_split=0.1, name="FFNN_3")
     ]
     results_epi = predict_epigenomics(input_data_epi.values, output_data.values.ravel(), epi_models)
     show_barplots(results_epi, "epi")
 
     shape = (get_default('window_size'), len(get_default('nucleotides')))
     seq_models = [
-        get_mlp_sequential()(shape, name="MLP"),
-        get_ffnn_sequential()(shape, name="FFNN"),
-        get_cnn_sequential_v1()(shape, name="CNN_1")
+        get_mlp_sequential()(shape, batch_size=None, name="MLP"),
+        get_ffnn_sequential()(shape, batch_size=None, name="FFNN"),
+        get_cnn_sequential_v1()(shape, batch_size=None, name="CNN_1")
     ]
     results_seq = predict_sequences(input_data_seq, output_data.values.ravel(), seq_models)
     show_barplots(results_seq, "seq")

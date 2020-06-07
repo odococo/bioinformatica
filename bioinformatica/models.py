@@ -1,11 +1,11 @@
 from tensorflow.python.keras.layers import Dense, BatchNormalization, Activation, Dropout, ThresholdedReLU, \
     AlphaDropout, Flatten, Conv2D, Reshape
 
-from .meta_models import Model
+from .meta_models import Models
 
 
 def get_mlp_epigenomics():
-    return Model.MLP(
+    return Models.MLP(
         Dense(128, activation="relu"),
         Dense(64, activation="relu"),
         Dense(32, activation="relu"),
@@ -13,7 +13,7 @@ def get_mlp_epigenomics():
 
 
 def get_ffnn_epigenomics_v1():
-    return Model.FFNN(
+    return Models.FFNN(
         Dense(256, activation="relu"),
         Dense(128),
         BatchNormalization(),
@@ -26,7 +26,7 @@ def get_ffnn_epigenomics_v1():
 
 
 def get_ffnn_epigenomics_v2():
-    return Model.FFNN(
+    return Models.FFNN(
         Dense(256, activation="relu"),
         Dense(128),
         BatchNormalization(),
@@ -39,7 +39,7 @@ def get_ffnn_epigenomics_v2():
 
 
 def get_ffnn_epigenomics_v3():
-    return Model.FFNN(
+    return Models.FFNN(
         Dense(256, activation="relu"),
         Dense(128, activation="relu"),
         BatchNormalization(),
@@ -53,7 +53,7 @@ def get_ffnn_epigenomics_v3():
 
 
 def get_mlp_sequential():
-    return Model.MLP(
+    return Models.MLP(
         Flatten(),
         Dense(128, activation="relu"),
         Dense(64, activation="relu"),
@@ -62,7 +62,7 @@ def get_mlp_sequential():
 
 
 def get_ffnn_sequential():
-    return Model.FFNN(
+    return Models.FFNN(
         Flatten(),
         Dense(128, activation="relu"),
         Dense(64, activation="relu"),
@@ -75,7 +75,7 @@ def get_ffnn_sequential():
 
 
 def get_cnn_sequential_v1():
-    return Model.CNN(
+    return Models.CNN(
         Reshape((200, 4, 1),),
         Conv2D(64, kernel_size=(10, 2), activation="relu"),
         Conv2D(64, kernel_size=(10, 2), activation="relu"),

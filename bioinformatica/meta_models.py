@@ -10,7 +10,7 @@ from tensorflow.keras.models import Sequential
 from .defaults import get_default
 
 
-class Model:
+class Models:
     # to avoid warning in other files
     DecisionTree = None
     RandomForest = None
@@ -20,6 +20,8 @@ class Model:
     FFNN = None
     CNN = None
 
+
+class Model:
     def __init__(self, name: str, model: Union[Sequential, RandomForestClassifier, DecisionTreeClassifier], **kwargs):
         self.name = name
         self.model = model
@@ -52,7 +54,7 @@ def _get_decision_tree(default_name: str = 'DecisionTree', criterion: str = 'gin
     return get_model
 
 
-Model.DecisionTree = _get_decision_tree()
+Models.DecisionTree = _get_decision_tree()
 
 
 def _get_random_forest(default_name: str = 'RandomForest', n_estimators: int = 500, criterion: str = 'gini',
@@ -73,7 +75,7 @@ def _get_random_forest(default_name: str = 'RandomForest', n_estimators: int = 5
     return get_model
 
 
-Model.RandomForest = _get_random_forest()
+Models.RandomForest = _get_random_forest()
 
 
 def _get_sequential(default_name: str = 'Sequential'):
@@ -82,7 +84,7 @@ def _get_sequential(default_name: str = 'Sequential'):
         def get_model(input_shape: Tuple[int], name: str = None, optimizer: str = get_default('optimizer'),
                       loss: str = get_default('loss'), metrics: List = None,
                       epochs: int = get_default('epochs'), batch_size: int = get_default('batch_size'),
-                      validation_split: float = get_default('validation_split'), shuffle: bool = True,
+                      validation_split: float = get_default('validation_split'), shuffle: bool = get_default('shuffle'),
                       verbose: bool = get_default('verbose'), **kwargs):
             name = name or default_name
             input_layers = (Input(shape=input_shape),)
@@ -116,8 +118,8 @@ def _get_sequential(default_name: str = 'Sequential'):
     return get_layers
 
 
-Model.Sequential = _get_sequential()
-Model.Perceptron = _get_sequential('Perceptron')()
-Model.MLP = _get_sequential('MLP')
-Model.FFNN = _get_sequential('FFNN')
-Model.CNN = _get_sequential('CNN')
+Models.Sequential = _get_sequential()
+Models.Perceptron = _get_sequential('Perceptron')()
+Models.MLP = _get_sequential('MLP')
+Models.FFNN = _get_sequential('FFNN')
+Models.CNN = _get_sequential('CNN')

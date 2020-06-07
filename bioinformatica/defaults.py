@@ -12,13 +12,14 @@ _defaults = {
     'cell_line': '',
     'region': '',
     'test_size': 0.2,
-    'validation_split': 0.1,
+    'validation_split': 0.0,
     'alpha': 0.1,
     'verbose': False,
     'optimizer': 'nadam',
     'loss': 'binary_crossentropy',
     'boruta_iterations': 10,
-    'results_path': ''
+    'results_path': '',
+    'shuffle': True
 }
 
 

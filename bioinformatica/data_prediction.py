@@ -62,7 +62,7 @@ def _get_result(model: Model, run_type: str, holdout: int, **kwargs) -> Dict:
     }
 
 
-def predict_epigenomics(data: np.ndarray, labels: pd.DataFrame, models: List[Model]) -> List[Dict]:
+def predict_epigenomics(data: np.ndarray, labels: pd.DataFrame, models: List[Model]) -> pd.DataFrame:
     filename = _get_filename("epi")
     if os.path.exists(filename):
         with open(filename) as json_file:
@@ -83,10 +83,10 @@ def predict_epigenomics(data: np.ndarray, labels: pd.DataFrame, models: List[Mod
             print("end")
             compress_json.local_dump(results, filename)
 
-    return results
+    return pd.DataFrame(results).drop(columns=['holdout'])
 
 
-def predict_sequences(sequences: pd.DataFrame, labels: pd.DataFrame, models: List[Model]) -> List[Dict]:
+def predict_sequences(sequences: pd.DataFrame, labels: pd.DataFrame, models: List[Model]) -> pd.DataFrame:
     filename = _get_filename("seq")
     if os.path.exists(filename):
         with open(filename) as json_file:
@@ -98,12 +98,10 @@ def predict_sequences(sequences: pd.DataFrame, labels: pd.DataFrame, models: Lis
                                              total=get_default('splits'), desc="Computing holdouts",
                                              dynamic_ncols=True):
         train, test = get_holdout(train_index, test_index, sequences, labels)
-        for model in tqdm(models, total=len(models), desc="Training models",
-                          leave=False, dynamic_ncols=True):
+        for model, params in tqdm([model.get_model() for model in models], total=len(models), desc="Training models",
+                                  leave=False, dynamic_ncols=True):
             if _precomputed(results, model, i):
                 continue
-
-            model, _ = model.get_model()
 
             history = model.fit(
                 train,
@@ -113,9 +111,7 @@ def predict_sequences(sequences: pd.DataFrame, labels: pd.DataFrame, models: Lis
                 callbacks=[
                     EarlyStopping(monitor="val_loss", mode="min", patience=50)
                 ],
-                epochs=1000,
-                shuffle=True,
-                verbose=False,
+                **params
             ).history
             scores = pd.DataFrame(history).iloc[-1].to_dict()
 
@@ -134,12 +130,10 @@ def predict_sequences(sequences: pd.DataFrame, labels: pd.DataFrame, models: Lis
                                        }
                                        ))
             compress_json.local_dump(results, filename)
-    return results
+    return pd.DataFrame(results).drop(columns=['holdout'])
 
 
-def show_barplots(results: List[Dict], datatype: str) -> None:
-    df = pd.DataFrame(results).drop(columns=['holdout'])
-
+def show_barplots(df: pd.DataFrame, datatype: str) -> None:
     barplots(
         df,
         groupby=["model", "run_type"],
