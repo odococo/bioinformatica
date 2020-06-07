@@ -14,8 +14,7 @@ def test_data_prediction():
         splits=2,
         batch_size=1024,
         results_path=f'{os.getcwd()}/results',
-        assembly_path=f'{os.getcwd()}/genomes',
-        patience=1
+        assembly_path=f'{os.getcwd()}/genomes'
     )
     input_data_seq, output_data = data_retrieval(get_default('cell_line'), get_default('region'))
     input_data_seq = to_bed(input_data_seq)

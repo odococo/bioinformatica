@@ -10,6 +10,8 @@ from ucsc_genomes_downloader import Genome
 from .defaults import get_default
 from .mixed_sequence import MixedSequence
 
+_cache = {}
+
 
 def download_data(cell_line: str, region: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Download data from Fantom
@@ -40,7 +42,9 @@ def to_bed(data: pd.DataFrame) -> pd.DataFrame:
 
 def get_genome() -> Genome:
     """Download genome or retrieve it if given path"""
-    return Genome('hg19', cache_directory=get_default('assembly_path'))
+    genome = _cache.get('genome') or Genome('hg19', cache_directory=get_default('assembly_path'))
+    _cache['genome'] = genome
+    return genome
 
 
 def one_hot_encode(data: pd.DataFrame, genome: Genome) -> np.ndarray:
