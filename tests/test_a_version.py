@@ -1,4 +1,5 @@
 from validate_version_code import validate_version_code
+
 from bioinformatica.__version__ import __version__
 
 

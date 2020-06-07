@@ -1,5 +1,3 @@
-from shutil import rmtree
-
 from bioinformatica.data_retrieval import data_retrieval
 
 
