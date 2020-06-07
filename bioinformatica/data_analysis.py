@@ -1,11 +1,10 @@
 from multiprocessing import cpu_count
-from typing import Dict, List, Tuple, Union
+from typing import Dict, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from boruta import BorutaPy
-from prince import MFA
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.manifold import TSNE as STSNE
@@ -18,15 +17,15 @@ def _pca(data: Union[pd.DataFrame, np.ndarray], n_components: int = 2) -> np.nda
     return PCA(n_components=n_components, random_state=42).fit_transform(data)
 
 
-def _mfa(data: pd.DataFrame, n_components: int = 2, nucleotides: str = get_default('nucleotides')) -> np.ndarray:
-    return MFA(groups={
-        nucleotide: [
-            column
-            for column in data.columns
-            if nucleotide in column
-        ]
-        for nucleotide in nucleotides
-    }, n_components=n_components, random_state=42).fit_transform(data)
+# def _mfa(data: pd.DataFrame, n_components: int = 2, nucleotides: str = get_default('nucleotides')) -> np.ndarray:
+#     return MFA(groups={
+#         nucleotide: [
+#             column
+#             for column in data.columns
+#             if nucleotide in column
+#         ]
+#         for nucleotide in nucleotides
+#     }, n_components=n_components, random_state=42).fit_transform(data)
 
 
 def get_filtered_with_boruta(epigenomes: pd.DataFrame, labels: pd.DataFrame,
@@ -80,7 +79,7 @@ def get_tasks(epigenomes: Dict[str, pd.DataFrame], labels: Dict[str, pd.DataFram
         ]
     }
 
-    return tasks['x'], tasks['y'], tasks['title']
+    return tasks['x'], tasks['y'], tasks['titles']
 
 
 def _sklearn_tsne(data: np.ndarray, perplexity: int, dimensionality_threshold: int = 50):
