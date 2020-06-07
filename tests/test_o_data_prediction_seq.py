@@ -10,10 +10,9 @@ def test_data_prediction():
     set_default(
         cell_line='HepG2',
         region='promoters',
-        epochs=4,
+        epochs=2,
         splits=2,
         batch_size=1024,
-        boruta_iterations=2,
         results_path=f'{os.getcwd()}/results',
         assembly_path=f'{os.getcwd()}/genomes'
     )
