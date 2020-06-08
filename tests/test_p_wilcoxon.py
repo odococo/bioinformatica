@@ -6,7 +6,7 @@ from bioinformatica.data_prediction import t_wilcoxon
 
 
 def test_wilcoxon():
-    with open('results/results_HEK293_enhancers_epi.json') as json_file:
+    with open('results/results_wilcoxon.json') as json_file:
         results = json.load(json_file)
 
     df = pd.DataFrame(results)
